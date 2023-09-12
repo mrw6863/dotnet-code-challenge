@@ -7,7 +7,7 @@ namespace CodeChallenge.Models
 {
     public class ReportingStructure
     {
-        public String employee { get; set; }
-        public String numberOfReports { get; set; }
+        public Employee Employee { get; set; }
+        public int NumberOfReports { get; set; }
     }
 }

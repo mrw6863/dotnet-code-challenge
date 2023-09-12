@@ -40,6 +40,16 @@ namespace CodeChallenge.Services
             return null;
         }
 
+        public Employee GetDirectReportsById(string id)
+        {
+            if (!String.IsNullOrEmpty(id))
+            {
+                return _employeeRepository.GetDirectReportsById(id);
+            }
+
+            return null;
+        }
+
         public Employee Replace(Employee originalEmployee, Employee newEmployee)
         {
             if(originalEmployee != null)

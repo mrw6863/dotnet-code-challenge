@@ -10,38 +10,50 @@ namespace CodeChallenge.Services
 {
     public class ReportingStructureService : IReportingStructureService
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmployeeService _employeeService;
         private readonly ILogger<EmployeeService> _logger;
 
-        public ReportingStructureService(ILogger<EmployeeService> logger, IEmployeeRepository employeeRepository)
+        public ReportingStructureService(ILogger<EmployeeService> logger, IEmployeeService employeeService)
         {
-            _employeeRepository = employeeRepository;
+            _employeeService = employeeService;
             _logger = logger;
         }
 
         public ReportingStructure GetById(string id)
         {
-
-            Employee employee = _employeeRepository.GetById(id);
-
-            if (employee == null) {
-                throw new Exception("Invalid employeeId: " + id);
-            }
-
-            ReportingStructure reportingStructure = new ReportingStructure(employee);
-
-            int numberOfReports = 0;
-            List<Employee> directReports = employee.DirectReports;
-            numberOfReports = directReports.Count();
-            for (Employee e : directReports) {
-                List<Employee> dp = emp.getDirectReports();
-                if (dp != null) {
-                    numberOfReports += emp.getDirectReports().size();
-                }
-            }
-            reportingStructure.setNumberOfReports(numberOfReports);
-
+            Employee employee = _employeeService.GetDirectReportsById(id);
+            ReportingStructure reportingStructure = new ReportingStructure();
+            reportingStructure.Employee = employee;
+            reportingStructure.NumberOfReports = GetTotalNumberOfReports(employee);
             return reportingStructure;
         }
+
+        public int GetTotalNumberOfReports(Employee employee)
+        {
+            int reportCount = 0;
+            //todo this doesnt work
+            if (employee == null)
+            {
+                return reportCount;
+            }
+            else if (employee.DirectReports == null)
+            {
+                return reportCount;
+            }
+            else
+            {
+                reportCount += employee.DirectReports.Count;
+                foreach (var reportingEmployee in employee.DirectReports)
+                {
+                    var currentEmployee = _employeeService.GetById(reportingEmployee.EmployeeId);
+                    if (currentEmployee != null)
+                    {
+                        reportCount += GetTotalNumberOfReports(currentEmployee);
+                    }
+                }
+                return reportCount;
+            }
+        }
+
     }
 }
